@@ -25,17 +25,6 @@ public class TestDynamic {
                 women.getClass().getInterfaces(), new ShoppingHandler(women));
 
         System.out.println(Arrays.toString(women.doShopping(100)));
-
-        Class<?> acClass = HookActivity.class.getClass();
-        try {
-            Method acMethod = acClass.getDeclaredMethod("getA");
-            acMethod.setAccessible(true);
-            Object aObject =  acMethod.invoke(null);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
 
