@@ -21,15 +21,14 @@ public class BinderProxyHookHandler implements InvocationHandler {
         try {
             this.stub = Class.forName("android.app.IActivityManager$Stub");
             this.iinterface = Class.forName("android.app.IActivityManager");
-            Log.e(TAG, "BinderProxyHookHandler  ");
         } catch (ClassNotFoundException e) {
-            Log.e(TAG, "BinderProxyHookHandler error " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Log.e("1","BinderProxyHookHandler method:"+method);
         if ("queryLocalInterface".equals(method.getName())) {
             Log.d(TAG, "hook queryLocalInterface");
             return Proxy.newProxyInstance(proxy.getClass().getClassLoader(),

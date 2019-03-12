@@ -123,6 +123,5 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 28 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: __local_aars__:F.\Android\Android Studio\jre\lib\tools.jar:unspecified@jar" level="project" />
   </component>
 </module>

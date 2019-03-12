@@ -12,6 +12,8 @@ import java.util.Arrays;
 public class TestStatic {
     public static void main(String[] args) {
 
+        Eat eat = new ProxyEat();
+
         // 原始的厂家
         Shopping women = new ShoppingImpl();
 

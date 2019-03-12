@@ -6,17 +6,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 
 
 import com.weishu.upf.dynamic_proxy_hook.app2.hook.HookHelper;
 
+import java.lang.reflect.Method;
+
 /**
  * @author weishu
  * @date 16/1/28
  */
 public class MainActivity extends Activity {
+
+    Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +36,17 @@ public class MainActivity extends Activity {
             // 在这里进行Hook
             HookHelper.hooActivity(this);
             HookHelper.hookActivtyManagerService();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+            }
+        };
 
 
         Button tv = new Button(this);
@@ -39,16 +56,10 @@ public class MainActivity extends Activity {
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-                am.getAppTasks();
+                handler.sendEmptyMessage(1);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse("http://www.baidu.com"));
-
-                // 注意这里使用的ApplicationContext 启动的Activity
-                // 因为Activity对象的startActivity使用的并不是ContextImpl的mInstrumentation
-                // 而是自己的mInstrumentation, 如果你需要这样, 可以自己Hook
-                // 比较简单, 直接替换这个Activity的此字段即可.
                 startActivity(intent);
             }
         });
@@ -60,6 +71,7 @@ public class MainActivity extends Activity {
         try {
             // 在这里进行Hook
             HookHelper.attachContext();
+            HookHelper.hookHnalder();
         } catch (Exception e) {
             e.printStackTrace();
         }
