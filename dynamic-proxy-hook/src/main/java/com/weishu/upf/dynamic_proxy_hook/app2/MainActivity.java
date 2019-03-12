@@ -1,12 +1,14 @@
 package com.weishu.upf.dynamic_proxy_hook.app2;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
 
 import com.weishu.upf.dynamic_proxy_hook.app2.hook.HookHelper;
 
@@ -24,18 +26,21 @@ public class MainActivity extends Activity {
         try {
             // 在这里进行Hook
             HookHelper.hooActivity(this);
+            HookHelper.hookActivtyManagerService();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         Button tv = new Button(this);
         tv.setText("测试界面");
 
         setContentView(tv);
-
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+                am.getAppTasks();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse("http://www.baidu.com"));

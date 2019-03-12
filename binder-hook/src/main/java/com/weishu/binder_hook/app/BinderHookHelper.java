@@ -20,6 +20,7 @@ public class BinderHookHelper {
         // 下面这一段的意思实际就是: ServiceManager.getService("clipboard");
         // 只不过 ServiceManager这个类是@hide的
         Class<?> serviceManager = Class.forName("android.os.ServiceManager");
+
         Method getService = serviceManager.getDeclaredMethod("getService", String.class);
 
         // ServiceManager里面管理的原始的Clipboard Binder对象
@@ -40,4 +41,22 @@ public class BinderHookHelper {
         cache.put(CLIPBOARD_SERVICE, hookedBinder);
     }
 
+
+    public static void hooVibratorService() throws Exception {
+
+        final String VIBRATOR_SERVICE = "vibrator";
+        Class<?> serviceManager = Class.forName("android.os.ServiceManager");
+        Method getService = serviceManager.getDeclaredMethod("getService", String.class);
+        IBinder rawBinder = (IBinder) getService.invoke(null, VIBRATOR_SERVICE);
+        IBinder hookedBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(),
+                new Class<?>[] { IBinder.class },
+                new BinderProxyVibratorHookHandler(rawBinder));
+
+        // 把这个hook过的Binder代理对象放进ServiceManager的cache里面
+        // 以后查询的时候 会优先查询缓存里面的Binder, 这样就会使用被我们修改过的Binder了
+        Field cacheField = serviceManager.getDeclaredField("sCache");
+        cacheField.setAccessible(true);
+        Map<String, IBinder> cache = (Map) cacheField.get(null);
+        cache.put(VIBRATOR_SERVICE, hookedBinder);
+    }
 }

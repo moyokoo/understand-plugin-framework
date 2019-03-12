@@ -1,4 +1,4 @@
-package com.weishu.binder_hook.app;
+package com.weishu.upf.dynamic_proxy_hook.app2.hook;
 
 import android.annotation.TargetApi;
 import android.content.ClipData;
@@ -23,17 +23,18 @@ public class BinderHookHandler implements InvocationHandler {
     public BinderHookHandler(IBinder base, Class<?> stubClass) {
         try {
             Method asInterfaceMethod = stubClass.getDeclaredMethod("asInterface", IBinder.class);
-            // IClipboard.Stub.asInterface(base);
             this.base = asInterfaceMethod.invoke(null, base);
         } catch (Exception e) {
-            throw new RuntimeException("hooked failed!"+e.getMessage());
+            throw new RuntimeException("hooked failed!" + e.getMessage());
         }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
+        if ("startActivity".equals(method.getName())) {
+            Log.e(TAG, "hook startActivity queryLocalInterface");
+        }
         // 把剪切版的内容替换为 "you are hooked"
         if ("getPrimaryClip".equals(method.getName())) {
             Log.d(TAG, "hook getPrimaryClip");

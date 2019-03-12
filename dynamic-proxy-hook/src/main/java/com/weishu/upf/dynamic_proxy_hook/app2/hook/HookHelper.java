@@ -1,10 +1,14 @@
 package com.weishu.upf.dynamic_proxy_hook.app2.hook;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Instrumentation;
+import android.os.IBinder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 
 /**
  * @author weishu
@@ -46,5 +50,19 @@ public class HookHelper {
 
         // 偷梁换柱
         mInstrumentationField.set(activity, evilInstrumentation);
+    }
+
+    public static void hookActivtyManagerService() throws Exception {
+        final String VIBRATOR_SERVICE = "activity";
+        Class<?> serviceManager = Class.forName("android.os.ServiceManager");
+        Method getService = serviceManager.getDeclaredMethod("getService", String.class);
+        IBinder rawBinder = (IBinder) getService.invoke(null, VIBRATOR_SERVICE);
+        IBinder hookedBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(),
+                new Class<?>[]{IBinder.class},
+                new BinderProxyHookHandler(rawBinder));
+        Field cacheField = serviceManager.getDeclaredField("sCache");
+        cacheField.setAccessible(true);
+        Map<String, IBinder> cache = (Map) cacheField.get(null);
+        cache.put(VIBRATOR_SERVICE, hookedBinder);
     }
 }
